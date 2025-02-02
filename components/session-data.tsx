@@ -1,4 +1,4 @@
-import type { Session } from "next-auth"
+import type { Session } from 'next-auth';
 
 export default function SessionData({ session }: { session: Session | null }) {
   if (session?.user) {
@@ -8,7 +8,7 @@ export default function SessionData({ session }: { session: Session | null }) {
         {Object.keys(session.user).length > 3 ? (
           <p>
             In this example, the whole session object is passed to the page,
-            including the raw user object. Our recommendation is to{" "}
+            including the raw user object. Our recommendation is to{' '}
             <em>only pass the necessary fields</em> to the page, as the raw user
             object may contain sensitive information.
           </p>
@@ -27,12 +27,12 @@ export default function SessionData({ session }: { session: Session | null }) {
           </pre>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <p className="w-full rounded-md bg-gray-100 p-4">
       No session data, please <em>Sign In</em> first.
     </p>
-  )
+  );
 }
