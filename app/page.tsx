@@ -1,38 +1,82 @@
-import CustomLink from '@/components/custom-link';
+import { AccessDenied } from '@/components/client/authentication/AccessDenied';
+import { prisma } from '@/prisma/client';
 import { auth } from 'auth/auth';
-
+import { getLoggedDatesInYear } from '@/lib/getLoggedDatesInYear';
+import { WorkdayTracker } from '@/components/client/WorkdayTracker/WorkdayTracker';
+import { WorkSentiment } from '@prisma/client';
 export default async function Index() {
   const session = await auth();
 
+  if (!session?.accessToken || !session?.user?.id) {
+    return <AccessDenied />;
+  }
+
+  const loadLoggedDates = async () => {
+    'use server';
+    const loggedDates = await getLoggedDatesInYear(
+      new Date().getFullYear(),
+      session.user!.id!,
+    );
+    return loggedDates;
+  };
+
+  const deleteWorkday = async (date: Date) => {
+    'use server';
+    try {
+      await prisma.workdaySentiment.deleteMany({
+        where: {
+          userId: session.user!.id!,
+          date: {
+            lte: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+              23,
+              59,
+              59,
+              999,
+            ),
+            gte: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+              0,
+              0,
+              0,
+              0,
+            ),
+          },
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  const submitWorkday = async (data: FormData, date: Date = new Date()) => {
+    'use server';
+    const session = await auth();
+    const sentiment = data.get('sentiment');
+    // delete the sentiment for today if it exists to have the sentiment submission be idempotent
+    await deleteWorkday(date);
+    await prisma.workdaySentiment.create({
+      data: {
+        date: date,
+        sentiment: sentiment as WorkSentiment,
+        userId: session!.user!.id!,
+      },
+    });
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold">NextAuth.js Example</h1>
-      <div>
-        This is an example site to demonstrate how to use{' '}
-        <CustomLink href="https://nextjs.authjs.dev">NextAuth.js</CustomLink>{' '}
-        for authentication. Check out the{' '}
-        <CustomLink href="/server-example" className="underline">
-          Server
-        </CustomLink>{' '}
-        and the{' '}
-        <CustomLink href="/client-example" className="underline">
-          Client
-        </CustomLink>{' '}
-        examples to see how to secure pages and get session data.
-      </div>
-      <div>
-        WebAuthn users are reset on every deploy, don&apos;t expect your test
-        user(s) to still be available after a few days. It is designed to only
-        demonstrate registration, login, and logout briefly.
-      </div>
-      <div className="flex flex-col rounded-md bg-gray-100">
-        <div className="rounded-t-md bg-gray-200 p-4 font-bold">
-          Current Session
-        </div>
-        <pre className="whitespace-pre-wrap break-all px-4 py-6">
-          {JSON.stringify(session, null, 2)}
-        </pre>
-      </div>
+      <WorkdayTracker
+        deleteWorkday={deleteWorkday}
+        submitWorkday={submitWorkday}
+        loadLoggedDates={loadLoggedDates}
+      />
     </div>
   );
 }

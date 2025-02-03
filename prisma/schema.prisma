@@ -23,6 +23,7 @@ model WorkdaySentiment {
     sentiment     WorkSentiment
     user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
  
 model User {
   id            String          @id @default(cuid())
@@ -32,10 +33,12 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  invitedBuddies User[] @relation("Buddies")
+  invitedByBuddies User[] @relation("Buddies")
   workdaySentiments WorkdaySentiment[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
- 
+  buddyCode     String?        @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

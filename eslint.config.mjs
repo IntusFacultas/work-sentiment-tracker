@@ -22,6 +22,16 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/restrict-plus-operands': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
   {
