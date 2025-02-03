@@ -40,7 +40,7 @@ export default async function Index({
     'use server';
     const loggedDates = await getLoggedDatesInYear(
       new Date().getFullYear(),
-      session.user!.id!,
+      id,
     );
     return loggedDates;
   };
