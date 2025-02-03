@@ -8,6 +8,11 @@ export default defineConfig({
       provider: 'istanbul',
       excludeAfterRemap: true,
       exclude: [
+        '**/*.tsx',
+        'coverage',
+        '.next',
+        '.vercel',
+        '.github',
         'node_modules',
         'next.config.js',
         'postcss.config.js',

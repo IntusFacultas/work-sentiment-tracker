@@ -26,6 +26,18 @@ module.exports = {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
+        happy: {
+          DEFAULT: 'hsl(var(--happy))',
+          foreground: 'hsl(var(--happy-foreground))',
+        },
+        unhappy: {
+          DEFAULT: 'hsl(var(--unhappy))',
+          foreground: 'hsl(var(--unhappy-foreground))',
+        },
+        stressed: {
+          DEFAULT: 'hsl(var(--stressed))',
+          foreground: 'hsl(var(--stressed-foreground))',
+        },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
